@@ -1,13 +1,40 @@
-You're implementing a code plan.
-Follow each step as defined.
-Crete or edit the necesary files.
-Save the code to a files.
-Install any required dependency.
-Only modify files inside the project's root folder.
-Write any necesary test scripts.
+# Implement the following plan
 
-Return a list of created or modified files and testing commands.
+Follow the `Instructions` to implement the `Plan` then `Report` the completed work.
 
-Save results a file in the `{{base_dir}}/specs/IMPLEMENTATION_<descriptive-name>.md` replacing <descriptive-name> with the same descriptive name of the plan.
+## Instructions
 
-Plan: {{implementation_plan}}
+- Read the plan, think hard about the plan and implement the plan.
+
+## Plan
+
+{{implementation_plan}}
+
+## Report
+
+- Summarize the work you've just done in a concise bullet point list.
+- The summary should include only the development work.
+- Report the files and total lines changed with `git diff --stat`
+- Follow the Report format
+
+## Report format
+
+```md
+# Prompt: <prompt>
+
+## Description
+<describe the work done>
+
+## Creted files
+<list all created files>
+
+## Modified or deleted files
+<list all modified or deleted files>
+
+## Implementation plan
+<include the path of the implementation plan md file>
+
+## Notes
+<optionally list any additional notes, problems with the implementation, possible solutions, possible improbements, known bugs in libraries, etc>
+
+```
