@@ -1,0 +1,16 @@
+[project]
+name = "test-agent"
+version = "0.1.0"
+description = "Add your description here"
+readme = "README.md"
+requires-python = ">=3.12"
+dependencies = [
+    "duckduckgo-search>=8.1.1",
+    "lancedb>=0.29.2",
+    "ollama>=0.6.1",
+    "phidata>=2.7.10",
+    "pypdf>=6.7.0",
+    "sqlalchemy>=2.0.46",
+    "tantivy>=0.25.1",
+    "yfinance>=1.1.0",
+]
