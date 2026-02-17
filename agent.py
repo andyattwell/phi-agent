@@ -4,8 +4,9 @@ from pathlib import Path
 from typing import Optional
 from phi.agent import Agent
 from phi.model.ollama import Ollama
-from phi.tools.duckduckgo import DuckDuckGo
 from phi.tools.file import FileTools
+
+from agents.web import DuckDuckGo
 # from phi.tools.yfinance import YFinanceTools
 from phi.utils.log import logger
 

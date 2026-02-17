@@ -6,6 +6,8 @@ from phi.agent import Agent
 from phi.model.ollama import Ollama
 from phi.tools.python import PythonTools
 
+from agent import FileToolsWithOptionalListArg
+
 
 class CodeAgent:
     """Agent that generates and runs code scripts using PythonTools."""
@@ -43,6 +45,7 @@ class CodeAgent:
             "When the user says 'only code' or 'just the code', return the code with minimal or no explanation.",
             "When running code, report any errors or output accurately. If a dependency is missing and pip_install is enabled, install it and retry when reasonable.",
             "Do not execute code that could be destructive (e.g. delete files, format disks) unless the user clearly requested it.",
+            "IMPORTANT: Output only code, no other text or explanation."
         ]
 
     def _build_agent(self) -> Agent:
@@ -58,7 +61,7 @@ class CodeAgent:
             goal="Generate and run code scripts to fulfill user requests",
             description="The Code Agent generates Python and other code. It can save scripts, run them, and install dependencies when allowed.",
             model=model,
-            tools=[python_tools],
+            tools=[python_tools, FileToolsWithOptionalListArg(base_dir=self.base_dir)],
             instructions=self._get_instructions(),
             guidelines=self._get_guidelines(),
             markdown=True,
