@@ -24,12 +24,12 @@ After an implementation is done, documentation must reflect the current state of
 6. **Place documentation in the right place**: Prefer `app/README.md` or project root `README.md` for app-level docs; use `docs/` for detailed or multi-file documentation when it makes sense.
 7. **Only touch documentation files** (e.g. README.md, docs/*.md, CHANGELOG.md). Do not modify source code.
 
-## Implementation report
-
-{{implementation_report}}
-
 ## Output
 
 - Create new documentation files or update existing ones as needed.
 - Do not return a long summary in your reply; focus on having created or updated the documentation files via the file tools.
 - If you made changes, list the documentation files created or updated at the end of your response.
+
+## Implementation report
+
+{{implementation_report}}

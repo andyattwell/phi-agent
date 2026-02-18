@@ -34,7 +34,7 @@ TEST_COMMAND_TIMEOUT: 5 minutes
 - API health check is required
 - Test execution order is important - dependencies should be validated first
 - All file paths are relative to the project root
-- Always run `pwd` and `cd` before each test to ensure you're operating in the correct directory for the given test
+- Save the plan in `specs/{{workspace_id}}/TESTS.md`
 
 ## Test Execution Sequence
 

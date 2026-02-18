@@ -4,7 +4,7 @@ import sys
 
 from dotenv import load_dotenv
 
-from agents.code import CodeAgent
+from agents.code_agent import CodeAgent
 from agents.files import FilesAgent
 from agents.manager import OrchestrationAgent
 from agents.validation import ValidationAgent

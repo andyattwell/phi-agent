@@ -16,6 +16,7 @@ Follow the `Instructions` to implement the `Plan` then `Report` the completed wo
 - The summary should include only the development work.
 - Report the files and total lines changed with `git diff --stat`
 - Follow the Report format
+- Save the plan in `specs/{{workspace_id}}/IMPLEMENTATION.md`
 
 ## Report format
 

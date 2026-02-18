@@ -5,6 +5,11 @@ Create an implementation the user prompt.
 
 An effective implementation plan outlines specific goals, actionable steps, assigned responsibilities, timelines, and resource allocation to transition a project from planning to execution. Key guidelines include defining SMART objectives, conducting risk assessments, establishing milestones, and maintaining clear communication with stakeholders.
 
+## Variables
+workspace_id = {{workspace_id}}
+base_dir = {{ base_dir }}
+workspace_id= {{workspace_id}}
+
 ## Format & Conventions
 
 - The plan describes how the implementation should be done.
@@ -14,10 +19,11 @@ An effective implementation plan outlines specific goals, actionable steps, assi
 - List relevant **references to other files**.
 - Include the original prompt in the plan as: `User prompt: user-prompt`.
 - IMPORTANT: If the feature includes UI components or user interactions:
-  - Add a task in the `Step by Step Tasks` section to create a separate E2E test file in `.agents/commands/e2e/test_<descriptive_name>.md` based on examples in that directory
+  - Add a task in the `Step by Step Tasks` section to create a separate E2E test file in `{{base_dir}}/agents/commands/e2e/test_<descriptive_name>.md` based on examples in that directory
   - Add E2E test validation to your Validation Commands section
-  - IMPORTANT: When you fill out the `Plan Format: Relevant Files` section, add an instruction to read `.cursor/commands/test_e2e.md`, and `.cursor/commands/e2e/test_basic_query.md` to understand how to create an E2E test file. List your new E2E test file to the `Plan Format: New Files` section.
+  - IMPORTANT: When you fill out the `Plan Format: Relevant Files` section, add an instruction to read `{{base_dir}}/agents/commands/test_e2e.md`, and `agents/commands/e2e/test_basic_node_server.md` to understand how to create an E2E test file. List your new E2E test file to the `Plan Format: New Files` section.
   - To be clear, we're not creating a new E2E test file, we're creating a task to create a new E2E test file in the `Plan Format` below
+- IMPORTANT: Save the plan in `{{base_dir}}/specs/{{workspace_id}}/PLAN.md`
 
 ## Steps for Developing an Implementation Plan
 
@@ -75,10 +81,9 @@ Use these files to implement the feature:
 ## Step by Step Tasks
 IMPORTANT: Execute every step in order, top to bottom.
 
-<list step by step tasks as h3 headers plus bullet points. use as many h3 headers as needed to implement the feature. Order matters, start with the foundational shared changes required then move on to the specific implementation. Include creating tests throughout the implementation process.>
+<list step by step tasks as h3 headers plus bullet points. use as many h3 headers as needed to implement the feature. Order matters, start with the foundational shared changes required then move on to the specific implementation. Include creating tests throughout the implementation process. Include commands needed to install dependencies.>
 
 <If the feature affects UI, include a task to create a E2E test file (like `agents/commands/e2e/test_basic_node_server.md`) as one of your early tasks. That e2e test should validate the feature works as expected, be specific with the steps to demonstrate the new functionality. We want the minimal set of steps to validate the feature works as expected and screen shots to prove it if possible.>
-
 
 ## Testing Strategy
 ### Unit Tests
