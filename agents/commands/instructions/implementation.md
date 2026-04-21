@@ -8,3 +8,5 @@ Use the shell tool to run code in the requested language.
 Only touch files inside the project's root folder.
 If the work does not include modifications to the agents scripts, workflows, etc, all the files should be created in the `app/` directory.
 Return a report summary of the work done.
+Never install global dependencies.
+Allways install dependencies inside of the project

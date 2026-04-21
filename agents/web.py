@@ -3,20 +3,21 @@ from datetime import date
 from typing import Any, Optional
 
 from phi.agent import Agent
-from phi.model.ollama import Ollama
-from tools.duckduckgo import DuckDuckGo
+
+from agents.llama_cpp_phi import build_llama_cpp_chat
+from agents.tools.duckduckgo import DuckDuckGo
 
 
 class WebAgent:
     """Agent that searches the web for information using DuckDuckGo."""
 
-    DEFAULT_MODEL_ID = "qwen3:1.7b"
-
     def __init__(
         self,
+        model_path: Optional[str] = None,
         model_id: Optional[str] = None,
     ):
-        self.model_id = model_id or self.DEFAULT_MODEL_ID
+        self.model_path = model_path
+        self.model_id = model_id
         self._agent = self._build_agent()
 
     def _get_instructions(self) -> list[str]:
@@ -39,7 +40,7 @@ class WebAgent:
         ]
 
     def _build_agent(self) -> Agent:
-        model = Ollama(id=self.model_id)
+        model = build_llama_cpp_chat(model_path=self.model_path, model_id=self.model_id)
         return Agent(
             name="Web Agent",
             role="Web Search Agent",

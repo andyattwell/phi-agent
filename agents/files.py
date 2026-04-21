@@ -4,8 +4,9 @@ from datetime import date
 from pathlib import Path
 from typing import Optional
 from phi.agent import Agent
-from phi.model.ollama import Ollama
 from phi.tools.file import FileTools
+
+from agents.llama_cpp_phi import build_llama_cpp_chat
 from phi.utils.log import logger
 
 class FileToolsWithOptionalListArg(FileTools):
@@ -64,15 +65,14 @@ class FileToolsWithOptionalListArg(FileTools):
 class FilesAgent:
     """Agent that manages files in a project folder: list, read, create, and edit files."""
 
-    # Model notes: qwen3 (slow), qwen3:1.7b (inaccurate, extra tool calls), llama3.2 (works, less accurate)
-    DEFAULT_MODEL_ID = "qwen3:1.7b"
-
     def __init__(
         self,
+        model_path: Optional[str] = None,
         model_id: Optional[str] = None,
         project_dir: Optional[Path] = None,
     ):
-        self.model_id = model_id or self.DEFAULT_MODEL_ID
+        self.model_path = model_path
+        self.model_id = model_id
         self.project_dir = (project_dir or Path("./").resolve()).resolve()
         self._agent = self._build_agent()
 
@@ -104,7 +104,7 @@ class FilesAgent:
         ]
 
     def _build_agent(self) -> Agent:
-        model = Ollama(id=self.model_id)
+        model = build_llama_cpp_chat(model_path=self.model_path, model_id=self.model_id)
         return Agent(
             name="Files Agent",
             role="Files Manager Agent",

@@ -10,14 +10,18 @@ class DocumentAgent(BaseAgent):
 
     def __init__(
         self,
+        model_path: Optional[str] = None,
         model_id: Optional[str] = None,
         workspace_id: Optional[str] = None,
         base_dir: Optional[Path] = None,
     ):
+        self.model_path = model_path
         self.model_id = model_id
         self.workspace_id = workspace_id or "default"
         self.base_dir = (base_dir or Path("./").resolve()).resolve()
         super().__init__(
+            model_path=self.model_path,
+            model_id=self.model_id,
             name="Document Agent",
             role="Documentation Agent",
             goal="Create and update documentation after an implementation",

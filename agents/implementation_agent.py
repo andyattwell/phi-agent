@@ -12,14 +12,18 @@ class ImplementationAgent(BaseAgent):
 
     def __init__(
         self,
+        model_path: Optional[str] = None,
         model_id: Optional[str] = None,
         workspace_id: Optional[str] = None,
         base_dir: Optional[Path] = None,
     ):
+        self.model_path = model_path
         self.model_id = model_id
         self.workspace_id = workspace_id or "default"
         self.base_dir = (base_dir or Path("./").resolve()).resolve()
         super().__init__(
+            model_path=self.model_path,
+            model_id=self.model_id,
             name="Implementation Agent", 
             role="Implementation Agent", 
             goal=f"Generate and run code scripts to fulfill the user request", 
@@ -27,6 +31,7 @@ class ImplementationAgent(BaseAgent):
             tools=[PythonTools(base_dir=self.base_dir, pip_install=True, run_code=True), FileToolsWithOptionalListArg(base_dir=self.base_dir), ShellTools()], 
             workspace_id=self.workspace_id, 
             base_dir=self.base_dir,
+            command="implementation",
         )
 
     def _get_prompt(self, prompt: str) -> str:

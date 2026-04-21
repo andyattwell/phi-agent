@@ -4,7 +4,7 @@ from pathlib import Path
 from phi.tools.python import PythonTools
 from phi.tools.shell import ShellTools
 from files import FileToolsWithOptionalListArg
-from base_agent import BaseAgent
+from agents.base_agent import BaseAgent
 
 
 class TestAgent(BaseAgent):
@@ -12,14 +12,18 @@ class TestAgent(BaseAgent):
 
     def __init__(
         self,
+        model_path: Optional[str] = None,
         model_id: Optional[str] = None,
         workspace_id: Optional[str] = None,
         base_dir: Optional[Path] = None,
     ):
+        self.model_path = model_path
         self.model_id = model_id
         self.workspace_id = workspace_id or "default"
         self.base_dir = (base_dir or Path("./").resolve()).resolve()
         super().__init__(
+            model_path=self.model_path,
+            model_id=self.model_id,
             name="Test Agent",
             role="Test Agent",
             goal="Test the implementation plan",

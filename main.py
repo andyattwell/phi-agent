@@ -21,29 +21,28 @@ def parse_prompt_from_args() -> str | None:
 
 def main():
     load_dotenv()
-    model_id = os.environ.get("MODEL_ID", "llama3.2")
+    model_path = os.environ.get("LLAMA_MODEL_PATH")
     project_dir = Path(__file__).resolve().parent
     file_agent = FilesAgent(
-        model_id=model_id,
+        model_path=model_path,
         project_dir=project_dir,
     )
     web_agent = WebAgent(
-        model_id=model_id,
+        model_path=model_path,
     )
     code_agent = CodeAgent(
-        model_id=model_id,
-        base_dir=project_dir,
-        pip_install=True,
-        run_code=True,
+        model_path=model_path,
+        base_dir=project_dir
     )
     validation_agent = ValidationAgent(
-        model_id=model_id,
+        model_path=model_path,
         project_dir=project_dir,
     )
     manager_agent = OrchestrationAgent(
-        model_id=model_id,
+        model_path=model_path,
         team=[web_agent, code_agent, file_agent, validation_agent],
     )
+
     prompt = parse_prompt_from_args()
     if prompt is not None:
         manager_agent.run(prompt, stream=True)

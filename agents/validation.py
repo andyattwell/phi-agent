@@ -4,8 +4,9 @@ from pathlib import Path
 from typing import Optional
 
 from phi.agent import Agent
-from phi.model.ollama import Ollama
 from phi.tools.file import FileTools
+
+from agents.llama_cpp_phi import build_llama_cpp_chat
 from phi.utils.log import logger
 
 
@@ -25,14 +26,14 @@ class ReadOnlyFileTools(FileTools):
 class ValidationAgent:
     """Agent that validates work done by other agents by checking if the original request was fulfilled."""
 
-    DEFAULT_MODEL_ID = "qwen3:1.7b"
-
     def __init__(
         self,
+        model_path: Optional[str] = None,
         model_id: Optional[str] = None,
         project_dir: Optional[Path] = None,
     ):
-        self.model_id = model_id or self.DEFAULT_MODEL_ID
+        self.model_path = model_path
+        self.model_id = model_id
         self.project_dir = (project_dir or Path("./").resolve()).resolve()
         self._agent = self._build_agent()
 
@@ -59,7 +60,7 @@ class ValidationAgent:
         ]
 
     def _build_agent(self) -> Agent:
-        model = Ollama(id=self.model_id)
+        model = build_llama_cpp_chat(model_path=self.model_path, model_id=self.model_id)
         return Agent(
             name="Validation Agent",
             role="Validation Agent",

@@ -7,8 +7,7 @@ An effective implementation plan outlines specific goals, actionable steps, assi
 
 ## Variables
 workspace_id = {{workspace_id}}
-base_dir = {{ base_dir }}
-workspace_id= {{workspace_id}}
+base_dir = {{base_dir}}
 
 ## Format & Conventions
 

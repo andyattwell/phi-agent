@@ -4,8 +4,9 @@ from datetime import date
 from typing import Optional, Any
 
 from phi.agent import Agent
-from phi.model.ollama import Ollama
 from phi.tools import Function
+
+from agents.llama_cpp_phi import build_llama_cpp_chat
 
 
 def _patch_transfer_function_additional_info() -> None:
@@ -48,18 +49,18 @@ _patch_transfer_function_additional_info()
 class OrchestrationAgent:
     """Orchestration agent that routes tasks to a team of specialized agents."""
 
-    DEFAULT_MODEL_ID = "qwen3:1.7b"
-
     def __init__(
         self,
         team: list[Agent],
+        model_path: Optional[str] = None,
         model_id: Optional[str] = None,
     ):
         if not team:
             raise ValueError("Orchestration requires at least one agent in the team.")
         # Accept wrapper classes (e.g. WebAgent, FilesAgent) that expose .agent
         self.team = [getattr(member, "agent", member) for member in team]
-        self.model_id = model_id or self.DEFAULT_MODEL_ID
+        self.model_path = model_path
+        self.model_id = model_id
         self._agent = self._build_agent()
 
     def _get_instructions(self) -> list[str]:
@@ -93,7 +94,7 @@ class OrchestrationAgent:
         ]
 
     def _build_agent(self) -> Agent:
-        model = Ollama(id=self.model_id)
+        model = build_llama_cpp_chat(model_path=self.model_path, model_id=self.model_id)
         return Agent(
             name="Orchestration Agent",
             role="Orchestration Agent",
