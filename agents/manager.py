@@ -83,14 +83,13 @@ class OrchestrationAgent:
 
     def _get_guidelines(self) -> list[str]:
         return [
-            "Always use the transfer_task tool to delegate; do not respond with only text when a team member should handle the request.",
+            "Always use the transfer_task_to_*_agent tools to delegate; do not respond with only plain text when a team member should handle the request.",
             "When calling transfer_task_to_*_agent always pass all three arguments: task_description, expected_output, and additional_information (string; use '' if you have nothing to add).",
             "Pick the most specific agent for the task (e.g. files for file edits, coder for code, web for search).",
             "For file operations (create, edit, delete, read files) you MUST call transfer_task to the files agent.",
             "For code operations (generate, run, install dependencies) you MUST call transfer_task to the code agent.",
             "For web operations (search the web) you MUST call transfer_task to the web agent.",
-            # "After the files agent or code agent completes a task, you MUST call transfer_task to the validation agent with the original user request so it can verify the work was fulfilled. For web-only answers, skip validation.",
-            "IMPORTANT: Output tool-call JSON as text; dont invoke the actual transfer_task tool",
+            "Invoke the actual tool functions provided by the runtime; do not fake delegation by only writing tool-call markup or JSON in your message.",
         ]
 
     def _build_agent(self) -> Agent:
@@ -108,18 +107,47 @@ class OrchestrationAgent:
             show_tool_calls=True,
         )
 
-    def _parse_raw_tool_call(self, response_text: str) -> Optional[tuple[str, dict[str, Any]]]:
-        """If the model output raw JSON instead of invoking the tool, parse it and return (tool_name, parameters) or None."""
-        if not response_text or "transfer_task" not in response_text or "parameters" not in response_text:
+    def _parse_xml_style_tool_call(self, response_text: str) -> Optional[tuple[str, dict[str, Any]]]:
+        """Parse Gemma/Hermes-style tool calls embedded in assistant text (<tool_call> ... <function=...>)."""
+        if not response_text or "transfer_task_to_" not in response_text:
             return None
-        # Match tool name: "name": transfer_task_to_xxx_agent or "name": "transfer_task_to_xxx_agent"
+        if "<function=" not in response_text and "<tool_call>" not in response_text:
+            return None
+        fn_match = re.search(
+            r"<function=(transfer_task_to_[a-zA-Z0-9_]+)>",
+            response_text,
+            re.IGNORECASE,
+        )
+        if not fn_match:
+            return None
+        tool_name = fn_match.group(1).strip()
+        if not tool_name.startswith("transfer_task_to_"):
+            return None
+        if not tool_name.endswith("_agent"):
+            tool_name = tool_name + "_agent"
+        params: dict[str, Any] = {}
+        for param_name, body in re.findall(
+            r"<parameter=([a-zA-Z0-9_]+)>\s*(.*?)\s*</parameter>",
+            response_text,
+            flags=re.DOTALL | re.IGNORECASE,
+        ):
+            params[param_name] = body.strip()
+        if not params:
+            return None
+        return (tool_name, params)
+
+    def _parse_json_style_tool_call(self, response_text: str) -> Optional[tuple[str, dict[str, Any]]]:
+        """If the model output JSON tool-call text, parse (tool_name, parameters) or None."""
+        if not response_text or "transfer_task" not in response_text:
+            return None
+        if '"parameters"' not in response_text and "'parameters'" not in response_text:
+            return None
         name_match = re.search(r'"name"\s*:\s*(?:"([^"]+)"|(\w+))', response_text)
         if not name_match:
             return None
         tool_name = (name_match.group(1) or name_match.group(2) or "").strip()
         if not tool_name.startswith("transfer_task_to_") or not tool_name.endswith("_agent"):
             return None
-        # Extract parameters JSON: from "parameters": { ... }
         params_match = re.search(r'"parameters"\s*:\s*(\{[^}]*(?:\{[^}]*\}[^}]*)*\})', response_text)
         if params_match:
             try:
@@ -127,11 +155,17 @@ class OrchestrationAgent:
                 return (tool_name, params)
             except json.JSONDecodeError:
                 pass
-        # Fallback: extract task_description only
         task_match = re.search(r'"task_description"\s*:\s*"((?:[^"\\]|\\.)*)"', response_text)
         if task_match:
             return (tool_name, {"task_description": task_match.group(1).encode().decode("unicode_escape")})
         return None
+
+    def _parse_raw_tool_call(self, response_text: str) -> Optional[tuple[str, dict[str, Any]]]:
+        """Parse delegation from assistant text: JSON tool-call blobs or XML-style markup."""
+        parsed = self._parse_json_style_tool_call(response_text)
+        if parsed:
+            return parsed
+        return self._parse_xml_style_tool_call(response_text)
 
     def _tool_name_to_agent(self, tool_name: str) -> Optional[Agent]:
         """Map transfer_task_to_<slug>_agent to the corresponding team agent by name."""
